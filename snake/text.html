@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test</title>
+    <link rel="stylesheet" href="" />
+  </head>
+  <body>
+    <canvas id="game1" width="500" height="500"></canvas>
+    <script>
+      const canvas = document.getElementById("game1");
+      const ctx = canvas.getContext("2d");
+
+      const square = {
+        x: 220,
+        y: 50,
+        width: 50,
+        height: 50,
+      };
+
+      function draw() {
+        ctx.fillStyle = "red";
+        ctx.fillRect(square.x, square.y, square.width, square.height);
+      }
+
+      function loop() {
+        requestAnimationFrame(loop);
+        draw();
+      }
+      loop();
+
+      addEventListener("keydown", function (event) {
+        switch (event.key) {
+          case "ArrowLeft":
+            ctx.fillStyle = "blue";
+            ctx.fillRect(
+              square.x - square.width,
+              square.y,
+              square.width,
+              square.height
+            );
+        }
+      });
+    </script>
+  </body>
+</html>

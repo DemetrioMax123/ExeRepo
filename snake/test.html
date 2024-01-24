@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test</title>
+    <style>
+      #game {
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game" width="400" height="400"> </canvas>
+    <script>
+      const canvas = document.getElementById("game");
+      const ctx = canvas.getContext("2d");
+
+      var count = 0;
+
+      const square = {
+        x: 150,
+        y: 150,
+        width: 5,
+        height: 5,
+
+        parts: [],
+        maxParts: 100,
+      };
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        square.parts.unshift({ x: square.x, y: square.y });
+
+        if (square.parts.length > square.maxParts) {
+          square.parts.pop();
+        }
+
+        ctx.fillStyle = "red";
+        square.parts.forEach(function (part, index) {
+          ctx.fillRect(part.x, part.y, square.width, square.height);
+        });
+      }
+
+      setInterval(loop, 15);
+
+      addEventListener("keydown", function (e) {
+        //left arrow
+        if (e.which === 37) {
+          square.x -= 5;
+        }
+        //up arrow
+        else if (e.which === 38) {
+          square.y -= 5;
+        }
+        //right arrow key
+        else if (e.which === 39) {
+          square.x += 5;
+        }
+        // down arrow key
+        else if (e.which === 40) {
+          square.y += 5;
+        }
+      });
+    </script>
+  </body>
+</html>

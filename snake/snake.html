@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snake</title>
+    <style>
+      html,
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #game {
+        background-color: black;
+        position: relative;
+      }
+      .bar {
+        color: white;
+        position: absolute;
+        top: 15px;
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        font-weight: bold;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game" width="400" height="400"> </canvas>
+    <div class="bar" id="scoreBar"></div>
+    <script>
+      const canvas = document.getElementById("game");
+      const ctx = canvas.getContext("2d");
+      const scoreBar = document.getElementById("scoreBar");
+
+      const eatAppleSound = new Audio("sounds/smb_coin.wav");
+      const gameOver = new Audio("sounds/smb_mariodie.wav");
+
+      const grid = 15;
+      var score = 0;
+
+      const snake = {
+        x: 150,
+        y: 150,
+
+        dx: grid,
+        dy: 0,
+
+        tail: [],
+        maxTail: 15,
+      };
+
+      var apple = {
+        x: 120,
+        y: 120,
+      };
+
+      function showScore() {
+        scoreBar.innerHTML = `Your score is: ${score}`;
+      }
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        showScore();
+
+        snake.x += snake.dx;
+        snake.y += snake.dy;
+
+        if (snake.x < 0) {
+          snake.x = canvas.width - grid;
+        } else if (snake.x >= canvas.width) {
+          snake.x = 0;
+        }
+        if (snake.y < 0) {
+          snake.y = canvas.height - grid;
+        } else if (snake.y >= canvas.height) {
+          snake.y = 0;
+        }
+
+        snake.tail.unshift({ x: snake.x, y: snake.y });
+
+        if (snake.tail.length > snake.maxTail) {
+          snake.tail.pop();
+        }
+
+        //apple
+        ctx.fillStyle = "red";
+        ctx.fillRect(apple.x, apple.y, grid - 1, grid - 1);
+
+        //snake
+        ctx.fillStyle = "green";
+        snake.tail.forEach(function (cola, index) {
+          ctx.fillRect(cola.x, cola.y, grid - 1, grid - 1);
+
+          if (isColliding(cola, apple)) {
+            snake.maxTail++;
+            apple.x = randomInt(0, 25) * grid;
+            apple.y = randomInt(0, 25) * grid;
+            score++;
+            eatAppleSound.play();
+          }
+          for (let i = index + 1; i < snake.tail.length; i++) {
+            if (cola.x === snake.tail[i].x && cola.y === snake.tail[i].y) {
+              gameOver.play();
+              ctx.fillStyle = "white";
+              ctx.font = "bold 18px serif";
+              ctx.fillText(
+                "TO RESTART THE GAME PRESS 'SPACE",
+                canvas.width / 2 - 170,
+                canvas.height / 2
+              );
+              ctx.fillStyle = "green";
+              clearInterval(intetvalId);
+            }
+          }
+        });
+      }
+
+      function isColliding(square1, square2) {
+        return (
+          square1.x < square2.x + grid - 1 &&
+          square1.x + grid - 1 > square2.x &&
+          square1.y < square2.y + grid - 1 &&
+          square1.y + grid - 1 > square2.y
+        );
+      }
+
+      document.addEventListener("keydown", function (e) {
+        //left
+        if (e.which === 37 && snake.dx === 0) {
+          snake.dx = -grid;
+          snake.dy = 0;
+        }
+        // up arrow key
+        else if (e.which === 38 && snake.dy === 0) {
+          snake.dy = -grid;
+          snake.dx = 0;
+        }
+        // right arrow key
+        else if (e.which === 39 && snake.dx === 0) {
+          snake.dx = grid;
+          snake.dy = 0;
+        }
+        // down arrow key
+        else if (e.which === 40 && snake.dy === 0) {
+          snake.dy = grid;
+          snake.dx = 0;
+        } else if (e.which === 32) {
+          snake.x = 150;
+          snake.y = 150;
+          snake.dx = 5;
+          snake.dy = 0;
+          snake.tail = [];
+          snake.maxTail = 4;
+
+          apple.x = randomInt(0, 25) * grid;
+          apple.y = randomInt(0, 25) * grid;
+          intetvalId = setInterval(loop, 140);
+        }
+      });
+
+      var intetvalId = setInterval(loop, 140);
+    </script>
+  </body>
+</html>
